@@ -87,7 +87,7 @@ if Meteor.isClient
           y = event.offsetY
           found = false
 
-          for animal in animals.reverse when not found
+          for animal in animals when not found
             distance = ((x - animal.x)**2 + (y - animal.y)**2)**(1/2)
             inrange = distance < animal.size
             if inrange
