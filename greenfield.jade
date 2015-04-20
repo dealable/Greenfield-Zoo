@@ -10,4 +10,16 @@ template(name='hello')
   
 template(name='zoo')
   //button#btn_game_start Let the animals roam
+  each animals2
+    h5 #{x}
+    h5 #{y}
+    h5 #{_id}
+  | animals
+  | #{animals}
+  | {{animals}}
+  | {{animals2}}
+  ul
+    li right click to add animals
+    li left click if you see them turning red from hunger
+    li middle click to kick them out of the zoo
   canvas#canvas(width="500" height="300" style="background-color: rgb(0, 140, 0);")

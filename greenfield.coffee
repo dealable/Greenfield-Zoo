@@ -10,7 +10,9 @@ colorMax = 217
 
 #    Hungryanimal extends Animal
 class Animal
-  constructor: (@hunger = 0, @metabolism = 1, @x0 = 150, @y0 = 150, @size = 10) ->
+  constructor: (@hunger = 0, @metabolism = 1, @x0 = 150, @y0 = 150, @size = 10, @id = undefined) ->
+    @x = @x0
+    @y = @y0
   getHungry: ->
     @hunger += @metabolism unless @hunger >= 100
     #console.log "hunger", @hunger
@@ -19,18 +21,6 @@ class Animal
     @x = @x0 + randomMovement()
     @y = @y0 + randomMovement()
 
-AnimalService =
-  createAnimals: ->
-    animal1 = new Animal
-    animal2 = new Animal 0, 2, 50, 50
-    animal3 = new Animal 100, 10, 50, 100
-    animals = [animal1, animal2, animal3]
-    animals
-  
-  moveAnimals: (animals) ->
-    for animal in animals
-      animal.getHungry()
-      animal.move()
 
 Canvas = 
   update: (animals) ->
@@ -53,16 +43,56 @@ Canvas =
       ctx.fill();
 animals = []
 if Meteor.isClient
+  Meteor.subscribe "animals"
   Meteor.startup -> 
-    start = ->
-      animals.push animal for animal in AnimalService.createAnimals()
-      moveAndDraw = ->
-        AnimalService.moveAnimals animals
-        Canvas.update animals
+#    start = ->
+#      animals.push animal for animal in AnimalService.createAnimals()
+#      moveAndDraw = ->
+#        AnimalService.moveAnimals animals
+#        Canvas.update animals
+#
+#      setInterval(moveAndDraw, 700);
+#    start()
+if Meteor.isClient
+  # This code only runs on the client
+  Template.zoo.helpers
+    animals: "hello"
+    animals2: -> Animals.find({})
+
+  Template.zoo.onRendered ->
+    console.log "zoorendered"
+    animals = []
+    console.log "size", Animals.find().count()
+    titles = (animalData._id for animalData in Animals.find({}).fetch())
+    console.log "title", titles
+    cursor = Animals.find()
+    console.log "foreach", cursor.forEach
+    docs2 = cursor.forEach (doc) -> console.log doc._id
+    console.log "docs",docs2
+    docs = (console.log doc._id for doc in cursor)
+    console.log "docs",docs
+    makeAnimal = (animalData) ->
+      newanimal = new Animal animalData.hunger, animalData.metabolism, animalData.x0, animalData.y0, animalData.size, animalData._id
+      console.log "animal data", newanimal
+      animals.push newanimal
+    animalDataGroup = Animals.find().map(makeAnimal)
+    console.log animalDataGroup
+    console.log animal for animal in animalDataGroup
+    
+    for animalData in animalDataGroup
+      console.log "animal data", animalData
+      newanimal = new Animal animalData.hunger, animalData.metabolism, animalData.x0, animalData.y0, animalData.size, animalData._id
+      console.log "animal data", newanimal
+      animals.push newanimal
+#    start = ->
+#      animals.push animal for animal in AnimalService.createAnimals()
+    moveAndDraw = ->
+      AnimalService.moveAnimals animals
+      Canvas.update animals
 
       setInterval(moveAndDraw, 700);
-    start()
-      
+#    start()
+    
   Template.zoo.events
 #    'click #btn_game_start': ->
     'mousedown #canvas': (event, handler) ->
@@ -100,6 +130,9 @@ if Meteor.isClient
           console.log "newanimal", event.offsetX, event.offsetY
           newanimal = new Animal 0, 2, event.offsetX, event.offsetY
           animals.push newanimal
+          mongoId = Meteor.call 'addAnimal', newanimal
+          newanimal.id = mongoId
+          
 #        else # some other button
 #          alert('You have a strange Mouse!')
 #      keys = []
@@ -108,8 +141,29 @@ if Meteor.isClient
 #          keys.push "#{a}#{b}"
 #      console.log "evt", (("#{key} #{event[key]}") for key in keys)
 
+
+Meteor.methods
+#  getAnimalDataGroup: -> Animals.find({})
+  addAnimal: (animal) -> 
+    console.log "adding animal", animal
+    mongoId = Animals.insert
+      hunger: animal.hunger
+      metabolism: animal.metabolism
+      x0: animal.x0
+      y0: animal.y0
+      size: animal.size
+      x: animal.x
+      y: animal.y
+      createdAt: new Date()
+    mongoId
+            
+  deleteAnimal: (animal) -> Animals.remove(animal.id)
+
+  feedAnimal: (animal) -> Animals.update(animal.id, { $set: { hunger: 0} })
     
 if Meteor.isServer 
+#  Meteor.publish "animals", -> Animals.find({})
   Meteor.startup ->
+    
 #    // code to run on server at startup
 
