@@ -9,15 +9,13 @@ template(name='hello')
   p You've pressed the button #{counter} times.
   
 template(name='zoo')
-  //button#btn_game_start Let the animals roam
-  each animals2
-    h5 #{x}
-    h5 #{y}
-    h5 #{_id}
-  | animals
-  | #{animals}
-  | {{animals}}
-  | {{animals2}}
+  button#b2 info
+  button#btn_start
+    if running
+      | Stop
+    else
+      | Start
+    | time
   ul
     li right click to add animals
     li left click if you see them turning red from hunger
