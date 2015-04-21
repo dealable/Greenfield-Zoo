@@ -10,12 +10,13 @@ template(name='hello')
   
 template(name='zoo')
   button#b2 info
+  button#btn_local start local game
   button#btn_start
     if running
       | Stop
     else
       | Start
-    | time
+    | server game
   ul
     li right click to add animals
     li left click if you see them turning red from hunger

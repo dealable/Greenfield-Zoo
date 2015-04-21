@@ -10,3 +10,5 @@ insecure
 mquandalle:jade
 coffeescript
 fourseven:scss
+sanjo:jasmine
+velocity:html-reporter

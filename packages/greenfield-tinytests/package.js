@@ -16,13 +16,14 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-  api.use('tinytest');
   api.use(["spacebars", "tinytest", "test-helpers"]);
   api.use("templating", "client");
   api.use('greenfield-tinytests');
 //  api.addFiles('test-stubs.js', 'client');
   api.addFiles('../../both/animals.coffee', 'client');
-  api.addFiles('../../both/game.coffee', 'client');
+  api.addFiles('../../both/collections.js', 'client');
+  api.addFiles('../../server/game.coffee', 'client');
+  api.addFiles('../../server/server.coffee', 'client');
   api.addFiles('../../client/events.coffee', 'client');
   api.addFiles('../../client/greenfield.coffee', 'client');
   api.addFiles('../../client/greenfield.jade', 'client');
